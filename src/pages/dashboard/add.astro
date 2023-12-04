@@ -1,91 +1,46 @@
 ---
-import { navigate } from "astro:transitions/client";
+import { Button } from "@material-tailwind/react";
 import prisma from "../../../modules/db";
-import { parser, decode } from "../../../modules/utils";
-import Container from "../../components/Container.astro";
+import { decode, parser } from "../../../modules/utils";
+import Input from "../../components/Input.astro";
+import Maps from "../../components/Maps.astro";
+import Navbarr from "../../components/Navbarr.astro";
+import Sidebar from "../../components/Sidebar";
 import Layout from "../../layouts/Layout.astro";
-import { Alert, Button, Select } from "@material-tailwind/react";
 
 let query = await Astro.request.text();
 let method = await Astro.request.method;
 let uri = await Astro.url.pathname;
 let body = decode(parser(query));
 
-globalThis.add = null;
 if (method == "POST") {
-  globalThis.add = !!(await prisma.kasus.create({
-    data: body,
-  }));
+  const add = await prisma.kasus.create({ data: body });
   return Astro.redirect(uri);
 }
-
-const listKasus = await prisma.kasus.findMany({});
 ---
 
 <Layout title="Karhutla">
   <div class="flex flex-row justify-between divide-x divide-black">
     <div class="flex flex-col w-auto p-4 border-b border-black">
-      <h1 class="font-[Walkind] text-2xl">🔥 Karhutla</h1>
-      <div class="flex flex-col mt-8 gap-3 whitespace-nowrap">
-        <a
-          href="/dashboard"
-          class="flex flex-row items-center md:cursor-pointer gap-3 p-3 w-full"
-        >
-          <h1 class="drop-shadow-md">➕</h1>
-          <h1>Dashboard</h1>
-        </a>
-        <a
-          href="/dashboard/add"
-          class="flex flex-row items-center md:cursor-pointer font-semibold gap-3 bg-orange-600/40 border border-orange-600 shadow-md p-3 rounded-xl w-full"
-        >
-          <h1 class="drop-shadow-md">📈</h1>
-          <h1>Tambah Kasus</h1>
-        </a>
-      </div>
+      <Sidebar path={uri} />
     </div>
     <div class="flex flex-col w-full">
-      <nav
-        class="flex flex-row w-full items-center p-4 justify-between border-b border-black pb-4"
-      >
-        <h1>Tambah Kasus</h1>
-        <img
-          class="rounded-full border border-black shadow-lg mr-3"
-          src="https://avatars.githubusercontent.com/u/93970726?v=4"
-          alt=""
-          width={31.91}
-          height={31.91}
-        />
-      </nav>
+      <Navbarr />
       <div class="flex flex-row gap-10 justify-between p-5 w-full">
         <div class="flex flex-col p-3 w-1/2">
           <div class="flex flex-row justify-between items-center">
             <h1 class="font-bold text-3xl pb-2">Data Karhutla</h1>
-            <h1
-              id="curr-pos"
-              class="px-2 py-1 shadow-md border border-black bg-amber-600 active:scale-[.97] rounded-xl md:cursor-pointer"
-            >
-              Lokasi Sekarang
-            </h1>
+            <h1 id="curr-pos" class="px-2 py-1 shadow-md shadow-orange-500/10 border border-orange-600 rounded-xl md:cursor-pointer">Lokasi sekarang</h1>
           </div>
           <form method="post" action="#" class="flex flex-col gap-4 mt-10">
             <div class="flex flex-row justify-between gap-3">
               <div class="flex flex-col gap-2 w-full">
                 <h1 class="text-sm">Masukan judul :</h1>
-                <input
-                  name="title"
-                  required
-                  placeholder="Rumah Warga"
-                  type="text"
-                  class="px-4 py-2 w-full rounded-lg outline-none border border-black"
-                />
+                <Input name="title" placeholder="Rumah Warga" />
               </div>
               <div class="flex flex-col gap-2 w-full">
                 <h1 class="text-sm">Masukan level :</h1>
-                <select
-                  id="level"
-                  name="level"
-                  class="px-4 py-2 w-full rounded-lg outline-none border border-black"
-                >
+                <select id="level" name="level" class="px-4 py-2 w-full rounded-lg outline-none border border-black">
                   <option value="KOSONG" class="text-gray-600 font-semibold">KOSONG</option>
                   <option value="RENDAH" class="text-blue-600 font-semibold">RENDAH</option>
                   <option value="MENENGAH" class="text-amber-600 font-semibold">MENENGAH</option>
@@ -95,135 +50,32 @@ const listKasus = await prisma.kasus.findMany({});
             </div>
             <div class="flex flex-col gap-2">
               <h1 class="text-sm">Masukan alamat :</h1>
-              <input
-                name="address"
-                required
-                placeholder="Jl. XXXXX ...."
-                type="text"
-                class="px-4 py-2 w-full rounded-lg outline-none border border-black"
-              />
+              <Input name="address" placeholder="Jl. XXXXX XXXXX...." />
             </div>
             <div class="flex flex-row justify-between gap-3">
               <div class="flex flex-col gap-2 w-full">
                 <h1 class="text-sm">Masukan latitude :</h1>
-                <input
-                  name="lat"
-                  required
-                  placeholder="-00.00000"
-                  type="text"
-                  class="px-4 py-2 w-full rounded-lg outline-none border border-black"
-                />
+                <Input name="lat" placeholder="-00.00000" />
               </div>
               <div class="flex flex-col gap-2 w-full">
                 <h1 class="text-sm">Masukan longitude :</h1>
-                <input
-                  name="long"
-                  required
-                  placeholder="00.000000"
-                  type="text"
-                  class="px-4 py-2 w-full rounded-lg outline-none border border-black"
-                />
+                <Input name="long" placeholder="00.000000" />
               </div>
             </div>
             <div class="flex flex-row items-center gap-3 w-full mt-10">
-              <Button
-                type="reset"
-                className="w-full"
-                color="blue"
-                variant="gradient"
-              >
+              <Button type="reset" className="w-full" color="blue" variant="outlined">
                 Reset
               </Button>
-              <Button
-                type="submit"
-                className="w-full"
-                color="green"
-                variant="gradient"
-              >
+              <Button type="submit" className="w-full" color="green" variant="outlined">
                 Simpan
               </Button>
             </div>
           </form>
         </div>
         <div class="w-1/2">
-          <div id="map" class="h-[650px] w-full"></div>
+          <Maps height={'!h-[650px]'} maping={true} />
         </div>
       </div>
     </div>
   </div>
 </Layout>
-
-<script define:vars={{ listKasus }}>
-  globalThis.listMark = listKasus;
-</script>
-
-<script type="text/javascript" async>
-  let docId = (id) => document.getElementById(id);
-  let docQ = (tag) => document.querySelector(`input[name="${tag}"]`);
-  let map, marker;
-
-  let pos = {
-    lat: parseFloat(listMark[listMark.length - 1].lat),
-    lng: parseFloat(listMark[listMark.length - 1].long),
-  };
-
-  function initMap() {
-    map = new google.maps.Map(docId("map"), {
-      center: pos,
-      zoom: 12,
-    });
-    map.addListener("click", (event) => mark(event.latLng));
-
-    for (let i = 0; i < listMark.length; i++) {
-      let x = listMark[i];
-      let loc = {
-        lat: parseFloat(x.lat),
-        lng: parseFloat(x.long),
-      };
-      new google.maps.Marker({
-        position: loc,
-        map: map,
-        icon: `/mark/${x.level.toLowerCase()}.svg`,
-        title: x.title,
-      });
-    }
-  }
-
-  function mark(loc) {
-    if (marker) marker.setPosition(loc);
-    else {
-      marker = new google.maps.Marker({
-        position: loc,
-        map: map,
-        icon: "/mark/kosong.svg",
-        animation: google.maps.Animation.BOUNCE,
-      });
-    }
-    revGeo(loc);
-  }
-
-  function revGeo(loc) {
-    const geo = new google.maps.Geocoder();
-    geo.geocode({ location: loc }, (res, stat) => {
-      if (stat === "OK") {
-        docQ("title").value = res[0].address_components[1].short_name;
-        docQ("address").value = res[0].formatted_address;
-        docQ("lat").value = res[0].geometry.location.lat();
-        docQ("long").value = res[0].geometry.location.lng();
-      }
-    });
-  }
-
-  docId("curr-pos").addEventListener("click", (e) => {
-    e.preventDefault();
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(({ coords }) => {
-        const { latitude: lat, longitude: lng } = coords;
-        var latlng = new google.maps.LatLng(lat, lng);
-        map.setCenter(latlng);
-        mark({ lat, lng });
-        revGeo({ lat, lng });
-      });
-    }
-  });
-</script>

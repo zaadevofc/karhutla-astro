@@ -1,15 +1,30 @@
 ---
 import Container from "../components/Container.astro";
+import Maps from "../components/Maps.astro";
 import Layout from "../layouts/Layout.astro";
+
+let stats = [
+  { title: ['99+', 'Titik Karhutla'] },
+  { title: ['99+', 'Daerah Level Tinggi'] },
+  { title: ['99+', 'Daerah Level Menengah'] },
+  { title: ['99+', 'Daerah Level Rendah'] },
+]
+
+let contacts = [
+  { title: 'Github', href: 'https://github.com/zaadevofc', color: 'bg-purple-500' },
+  { title: 'Instagram', href: 'https://instagram.com/zaadevofc', color: 'bg-pink-500' },
+  { title: 'Telegram', href: 'https://t.me/zaadevofc', color: 'bg-cyan-500' }, 
+]
 ---
 
 <Layout title="Karhutla">
   <Container class="flex flex-col p-8">
-    <nav
-      class="flex flex-row items-center justify-between border-b border-black pb-4"
-    >
-      <h1 class="font-[Walkind] text-2xl">Karhutla</h1>
-      <a href="/dashboard" class="px-2 py-1 shadow-md border border-black rounded-xl md:cursor-pointer">Masuk</a>
+    <nav class="flex flex-row items-center justify-between border-b border-black pb-4">
+      <h1 class="font-[Walkind] text-2xl tracking-wide">Karhutla</h1>
+      <div class="flex flex-row gap-3 items-center">
+        <h1 id="curr-pos" class="px-2 py-1 shadow-md shadow-cyan-500/10 border border-cyan-600 rounded-xl md:cursor-pointer">Lokasi saat ini</h1>
+      <a href="/dashboard" class="px-2 py-1 shadow-md shadow-orange-500/10 border border-orange-600 rounded-xl md:cursor-pointer">Masuk</a>
+      </div>
     </nav>
     <section class="flex flex-row w-full justify-between mt-10 gap-8">
       <div class="flex flex-col w-1/2">
@@ -17,30 +32,14 @@ import Layout from "../layouts/Layout.astro";
           Kami Menandai suatu <span class="text-orange-600">Karhutla</span> yang terjadi di Indonesia.
         </h1>
         <div class="flex flex-col my-12 gap-3">
-          <div class="flex flex-row items-center gap-3">
-            <h1 class="text-2xl font-[mooli] tracking-wide">
-              <span class="font-bold">99+</span>
-               Titik Karhutla
-            </h1>
-          </div>
-          <div class="flex flex-row items-center gap-3">
-            <h1 class="text-2xl font-[mooli] tracking-wide">
-              <span class="font-bold">99+</span>
-               Daerah Level Tinggi
-            </h1>
-          </div>
-          <div class="flex flex-row items-center gap-3">
-            <h1 class="text-2xl font-[mooli] tracking-wide">
-              <span class="font-bold">99+</span>
-               Daerah Level Menengah
-            </h1>
-          </div>
-          <div class="flex flex-row items-center gap-3">
-            <h1 class="text-2xl font-[mooli] tracking-wide">
-              <span class="font-bold">99+</span>
-               Daerah Level Rendah
-            </h1>
-          </div>
+          {stats.map(x => (
+            <div class="flex flex-row items-center gap-3">
+              <h1 class="text-2xl font-[mooli] tracking-wide">
+                <span class="font-bold">{x.title[0]}</span>
+                 {x.title[1]}
+              </h1>
+            </div>
+          ))}
         </div>
         <div class="flex flex-col gap-3">
           <h1 class="text-lg text-gray-700">Bantu kami menuntaskan masalah ini dengan menandai titik Karhutla dimanapun daerah nya dengan tepat dan akurat.</h1>
@@ -50,34 +49,16 @@ import Layout from "../layouts/Layout.astro";
         <div class="flex flex-col gap-3">
           <h1 class="text-lg text-gray-700">Contact support :</h1>
           <div class="flex flex-row items-center gap-3">
-            <div class="flex flex-row items-center gap-2 md:cursor-pointer" onclick="location.href = 'https:\/\/github.com/zaadevofc';">
-              <span class="w-2 h-2 rounded-full bg-gray-500"></span>
-              <h1 class="tracking-wider font-semibold font-[mooli]">Github</h1>
-            </div>
-            <div class="flex flex-row items-center gap-2 md:cursor-pointer" onclick="location.href = 'https:\/\/instagram.com/zaadevofc';">
-              <span class="w-2 h-2 rounded-full bg-orange-500"></span>
-              <h1 class="tracking-wider font-semibold font-[mooli]">Instagram</h1>
-            </div>
-            <div class="flex flex-row items-center gap-2 md:cursor-pointer" onclick="location.href = 'https:\/\/t.me/zaadevofc';">
-              <span class="w-2 h-2 rounded-full bg-sky-500"></span>
-              <h1 class="tracking-wider font-semibold font-[mooli]">Telegram</h1>
-            </div>
+            {contacts.map(x => (
+              <div class="flex flex-row items-center gap-2 md:cursor-pointer" onclick={`location.href = ${x.href};`}>
+                <span class={`w-2 h-2 rounded-full ${x.color}`}></span>
+                <h1 class="tracking-wider font-semibold font-[mooli]">{x.title}</h1>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-      <div class="w-[600px]">
-        <div id="google-map" class="h-[650px] w-full"></div>
-      </div>
+      <Maps width="!w-[600px] !h-[650px]" />
     </section>
   </Container>
 </Layout>
-
-<script type="text/javascript">
-  var googleMap;
-  function initGoogleMap() {
-    googleMap = new google.maps.Map(document.getElementById("google-map"), {
-      center: { lat: 0.537488, lng: 101.448387 },
-      zoom: 10,
-    });
-  }
-</script>

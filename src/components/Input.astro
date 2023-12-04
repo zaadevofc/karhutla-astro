@@ -1,0 +1,12 @@
+---
+interface Props {
+    id?: string;
+    name?: string;
+    placeholder?: string;
+    type?: astroHTML.JSX.HTMLInputTypeAttribute;
+    class?: string;
+    required?: boolean;
+}
+let props = Astro.props;
+---
+<input id={props.id} name={props.name} required={props.required || true} placeholder={props.placeholder} type={props.type || 'text'} class={`${props.class} px-4 py-2 w-full rounded-lg outline-none border border-black`} />

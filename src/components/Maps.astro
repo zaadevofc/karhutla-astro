@@ -1,0 +1,102 @@
+---
+import prisma from "../../modules/db";
+
+interface Props {
+  height?: string;
+  width?: string;
+  maping?: boolean;
+}
+
+let props = Astro.props;
+const listKasus = await prisma.kasus.findMany({});
+---
+
+<div id="map" class={`${props.height} ${props.width} h-[1000px] w-full`}></div>
+
+<script define:vars={{ listKasus, maping: props.maping }}>
+  globalThis.listMark = listKasus;
+  globalThis.maping = maping;
+</script>
+
+<script type="text/javascript" async>
+  let docId = (id) => document.getElementById(id);
+  let docQ = (tag) => document.querySelector(`input[name="${tag}"]`);
+  let map, marker;
+
+  let pos = {
+    lat: parseFloat(listMark[listMark.length - 1]?.lat) || -7.6275395,
+    lng: parseFloat(listMark[listMark.length - 1]?.long) || 110.8934787,
+  };
+
+  function initMap() {
+    map = new google.maps.Map(docId("map"), {
+      center: pos,
+      zoom: 11,
+    });
+    if (maping) {
+      map.addListener("click", (event) => mark(event.latLng));
+    }
+
+    for (let i = 0; i < listMark.length; i++) {
+      let x = listMark[i];
+      let loc = {
+        lat: parseFloat(x.lat),
+        lng: parseFloat(x.long),
+      };
+      new google.maps.Marker({
+        position: loc,
+        map: map,
+        icon: `/mark/${x.level.toLowerCase()}.svg`,
+        title: x.title,
+      });
+    }
+  }
+
+  function mark(loc, icon) {
+    if (marker) marker.setPosition(loc);
+    else {
+      marker = new google.maps.Marker({
+        position: loc,
+        map: map,
+        icon: `/mark/${icon ? icon.toLowerCase() : 'kosong'}.svg`,
+        animation: google.maps.Animation.BOUNCE,
+      });
+    }
+    revGeo(loc);
+  }
+
+  function revGeo(loc) {
+    const geo = new google.maps.Geocoder();
+    geo.geocode({ location: loc }, (res, stat) => {
+      if (stat === "OK") {
+        docQ("title").value = res[0].address_components[1].short_name;
+        docQ("address").value = res[0].formatted_address;
+        docQ("lat").value = res[0].geometry.location.lat();
+        docQ("long").value = res[0].geometry.location.lng();
+      }
+    });
+  }
+
+  docId("curr-pos").addEventListener("click", (e) => {
+    e.preventDefault();
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(({ coords }) => {
+        const { latitude: lat, longitude: lng } = coords;
+        var latlng = new google.maps.LatLng(lat, lng, 14);
+        map.setCenter(latlng);
+        mark({ lat, lng });
+        revGeo({ lat, lng });
+      });
+    }
+  });
+
+  for (let i = 0; i < listMark.length; i++) {
+    let x = listMark[i];
+    docId(`${x.lat}&&${x.long}`).addEventListener("click", (e) => {
+      let pos = { lat: x.lat, lng: x.long };
+      let latlng = new google.maps.LatLng(x.lat, x.long, 14);
+      map.setCenter(latlng);
+      revGeo(latlng);
+    });
+  }
+</script>

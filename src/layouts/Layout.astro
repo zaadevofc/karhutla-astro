@@ -22,7 +22,18 @@ const { title } = Astro.props;
 	  <script src={`https://maps.googleapis.com/maps/api/js?key=${import.meta.env.GMAPS_KEY}&callback=initMap`} async defer></script>
     <title>{title}</title>
   </head>
-  <body class="font-[poppins]">
+  <style>
+    body {
+      @apply font-[poppins];
+    }
+    .hide-scroll::-webkit-scrollbar {
+      @apply h-0 w-0;
+    }
+    .hide-scroll::-webkit-scrollbar-thumb {
+      @apply !rounded-none;
+    }
+  </style>
+  <body>
     <ThemeProvider>
       <slot />
     </ThemeProvider>

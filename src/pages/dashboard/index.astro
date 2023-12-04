@@ -1,47 +1,81 @@
 ---
-import Container from "../../components/Container.astro";
+import { Button } from "@material-tailwind/react";
+import prisma from "../../../modules/db";
+import { decode, parser } from "../../../modules/utils";
+import Input from "../../components/Input.astro";
+import Maps from "../../components/Maps.astro";
+import Navbarr from "../../components/Navbarr.astro";
+import Sidebar from "../../components/Sidebar";
 import Layout from "../../layouts/Layout.astro";
+
+let query = await Astro.request.text();
+let method = await Astro.request.method;
+let uri = await Astro.url.pathname;
+let body = decode(parser(query));
+
+if (method == "POST") {
+  const add = await prisma.kasus.create({ data: body });
+  return Astro.redirect(uri);
+}
 ---
 
 <Layout title="Karhutla">
   <div class="flex flex-row justify-between divide-x divide-black">
-    <div class="flex flex-col w-1/6 p-4 border-b border-black">
-      <h1 class="font-[Walkind] text-2xl">🔥 Karhutla</h1>
-      <div class="flex flex-col mt-8 gap-3">
-        <a href="/dashboard" class="flex flex-row items-center md:cursor-pointer font-semibold gap-3 bg-orange-600/40 border border-orange-600 shadow-md p-3 rounded-xl w-full">
-          <h1 class="drop-shadow-md">📈</h1>
-          <h1>Dashboard</h1>
-        </a>
-        <a href="/dashboard/add" class="flex flex-row items-center md:cursor-pointer gap-3 p-3 w-full">
-          <h1 class="drop-shadow-md">➕</h1>
-          <h1>Tambah Kasus</h1>
-        </a>
-      </div>
+    <div class="flex flex-col w-auto p-4 border-b border-black">
+      <Sidebar path={uri} />
     </div>
-    <div class="flex flex-col">
-      <nav class="flex flex-row w-full items-center p-4 justify-between border-b border-black pb-4">
-        <h1>Dashboard</h1>
-        <img
-          class="rounded-full border border-black shadow-lg mr-3"
-          src="https://avatars.githubusercontent.com/u/93970726?v=4"
-          alt=""
-          width={31.91}
-          height={31.91}
-        />
-      </nav>
-      <div class="w-[1220px]">
-        <div id="google-map" class="h-[650px] w-full"></div>
+    <div class="flex flex-col w-full">
+      <Navbarr />
+      <div class="flex flex-row gap-10 justify-between p-5 w-full">
+        <div class="flex flex-col p-3 w-1/2">
+          <div class="flex flex-row justify-between items-center">
+            <h1 class="font-bold text-3xl pb-2">Data Karhutla</h1>
+            <h1 id="curr-pos" class="px-2 py-1 shadow-md shadow-orange-500/10 border border-orange-600 rounded-xl md:cursor-pointer">Lokasi sekarang</h1>
+          </div>
+          <form method="post" action="#" class="flex flex-col gap-4 mt-10">
+            <div class="flex flex-row justify-between gap-3">
+              <div class="flex flex-col gap-2 w-full">
+                <h1 class="text-sm">Masukan judul :</h1>
+                <Input name="title" placeholder="Rumah Warga" />
+              </div>
+              <div class="flex flex-col gap-2 w-full">
+                <h1 class="text-sm">Masukan level :</h1>
+                <select id="level" name="level" class="px-4 py-2 w-full rounded-lg outline-none border border-black">
+                  <option value="KOSONG" class="text-gray-600 font-semibold">KOSONG</option>
+                  <option value="RENDAH" class="text-blue-600 font-semibold">RENDAH</option>
+                  <option value="MENENGAH" class="text-amber-600 font-semibold">MENENGAH</option>
+                  <option value="TINGGI" class="text-red-600 font-semibold">TINGGI</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <h1 class="text-sm">Masukan alamat :</h1>
+              <Input name="address" placeholder="Jl. XXXXX XXXXX...." />
+            </div>
+            <div class="flex flex-row justify-between gap-3">
+              <div class="flex flex-col gap-2 w-full">
+                <h1 class="text-sm">Masukan latitude :</h1>
+                <Input name="lat" placeholder="-00.00000" />
+              </div>
+              <div class="flex flex-col gap-2 w-full">
+                <h1 class="text-sm">Masukan longitude :</h1>
+                <Input name="long" placeholder="00.000000" />
+              </div>
+            </div>
+            <div class="flex flex-row items-center gap-3 w-full mt-10">
+              <Button type="reset" className="w-full" color="blue" variant="outlined">
+                Reset
+              </Button>
+              <Button type="submit" className="w-full" color="green" variant="outlined">
+                Simpan
+              </Button>
+            </div>
+          </form>
+        </div>
+        <div class="w-1/2">
+          <Maps height={'!h-[650px]'} />
+        </div>
       </div>
     </div>
   </div>
 </Layout>
-
-<script type="text/javascript">
-  var googleMap;
-  function initMap() {
-    googleMap = new google.maps.Map(document.getElementById("google-map"), {
-      center: { lat: 0.537488, lng: 101.448387 },
-      zoom: 10,
-    });
-  }
-</script>

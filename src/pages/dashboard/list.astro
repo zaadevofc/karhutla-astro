@@ -1,0 +1,85 @@
+---
+import prisma from "../../../modules/db";
+import Maps from "../../components/Maps.astro";
+import Navbarr from "../../components/Navbarr.astro";
+import Sidebar from "../../components/Sidebar";
+import Layout from "../../layouts/Layout.astro";
+
+let uri = await Astro.url.pathname;
+const listKasus = await prisma.kasus.findMany({});
+---
+
+<Layout title="Karhutla">
+  <div class="flex flex-row justify-between divide-x divide-black">
+    <div class="flex flex-col w-auto p-4 border-b border-black">
+      <Sidebar path={uri} />
+    </div>
+    <div class="flex flex-col w-full">
+      <Navbarr />
+      <div class="flex flex-row gap-10 justify-between p-5 w-full">
+        <div class="flex flex-col p-3 w-1/2">
+          <div class="flex flex-row justify-between items-center">
+            <h1 class="font-bold text-3xl pb-2">List Kasus</h1>
+            <h1 id="curr-pos" class="px-2 py-1 shadow-md shadow-orange-500/10 border border-orange-600 rounded-xl md:cursor-pointer">Lokasi sekarang</h1>
+          </div>
+          <div class="mt-6 flex flex-col">
+            <div class="flex flex-row items-center gap-3">
+              <div class="flex flex-row items-center gap-2">
+                <span class="h-3 w-3 rounded-full bg-red-600"></span>
+                <h1>Tinggi</h1>
+              </div>
+              <div class="flex flex-row items-center gap-2">
+                <span class="h-3 w-3 rounded-full bg-orange-600"></span>
+                <h1>Menengah</h1>
+              </div>
+              <div class="flex flex-row items-center gap-2">
+                <span class="h-3 w-3 rounded-full bg-blue-600"></span>
+                <h1>Rendah</h1>
+              </div>
+              <div class="flex flex-row items-center gap-2">
+                <span class="h-3 w-3 rounded-full bg-gray-600"></span>
+                <h1>Kosong</h1>
+              </div>
+            </div>
+            <div class={`hide-scroll mt-8 flex max-h-[450px] flex-col overflow-y-scroll opacity-100 duration-500`}>
+              {listKasus.reverse().map((x: any) => {
+                  return (
+                    <div id={`${x.lat}&&${x.long}`} class="flex items-center gap-5 divide-black border-b border-gray-400 p-2 pl-0 hover:rounded-lg hover:bg-slate-400/30 md:cursor-pointer">
+                      <div class="flex w-full flex-col">
+                        <h1 class="line-clamp-1 font-semibold">{x.address}</h1>
+                        <div class="flex w-full flex-row items-center justify-between">
+                          <h1>
+                            <span class="font-medium text-purple-600">{x.title}</span> |{' '}
+                            <span class="text-stone-700 text-sm">
+                              {x.lat}, {x.long}
+                            </span>
+                          </h1>
+                          <div class="flex flex-row items-center gap-2">
+                            {x.level == 'TINGGI' && <span class="h-3 w-3 rounded-full bg-red-600"></span>}
+                            {x.level == 'MENENGAH' && <span class="h-3 w-3 rounded-full bg-orange-600"></span>}
+                            {x.level == 'RENDAH' && <span class="h-3 w-3 rounded-full bg-blue-600"></span>}
+                            {x.level == 'KOSONG' && <span class="h-3 w-3 rounded-full bg-gray-600"></span>}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+        <div class="w-1/2">
+          <Maps height={'!h-[650px]'} maping={false} />
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+<style>
+  .hide-scroll::-webkit-scrollbar {
+      @apply h-0 w-0;
+  }
+  .hide-scroll::-webkit-scrollbar-thumb {
+    @apply !rounded-none;
+  }
+</style>

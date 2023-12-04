@@ -3,9 +3,9 @@ interface Props {
 	class?: string;
 }
 
-const ps = Astro.props;
+const props = Astro.props;
 ---
 
-<div class={`${ps.class} mx-auto flex max-w-7xl`}>
+<div class={`${props.class} mx-auto flex max-w-7xl`}>
     <slot />
 </div>
