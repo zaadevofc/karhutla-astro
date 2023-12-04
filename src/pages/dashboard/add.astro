@@ -1,26 +1,46 @@
 ---
+import prisma from "../../../modules/db";
+import { parser } from "../../../modules/utils";
 import Container from "../../components/Container.astro";
 import Layout from "../../layouts/Layout.astro";
+import { Button, Select } from "@material-tailwind/react";
+
+const body = `${Astro.request.body}` || " ";
+const q = parser(body);
+// const addKasus = () => {
+//   // const add = await prisma.kasus.create({
+//   //   data: { title, level, address, lat, long },
+//   // });
+//   alert('haii')
+// };
 ---
 
 <Layout title="Karhutla">
   <div class="flex flex-row justify-between divide-x divide-black">
-    <div class="flex flex-col w-1/6 p-4 border-b border-black">
+    <div class="flex flex-col w-auto p-4 border-b border-black">
       <h1 class="font-[Walkind] text-2xl">🔥 Karhutla</h1>
-      <div class="flex flex-col mt-8 gap-3">
-        <a href="/dashboard" class="flex flex-row items-center md:cursor-pointer gap-3 p-3 w-full">
+      <div class="flex flex-col mt-8 gap-3 whitespace-nowrap">
+        <a
+          href="/dashboard"
+          class="flex flex-row items-center md:cursor-pointer gap-3 p-3 w-full"
+        >
           <h1 class="drop-shadow-md">➕</h1>
           <h1>Dashboard</h1>
         </a>
-        <a href="/dashboard/add" class="flex flex-row items-center md:cursor-pointer font-semibold gap-3 bg-orange-600/40 border border-orange-600 shadow-md p-3 rounded-xl w-full">
+        <a
+          href="/dashboard/add"
+          class="flex flex-row items-center md:cursor-pointer font-semibold gap-3 bg-orange-600/40 border border-orange-600 shadow-md p-3 rounded-xl w-full"
+        >
           <h1 class="drop-shadow-md">📈</h1>
           <h1>Tambah Kasus</h1>
         </a>
       </div>
     </div>
-    <div class="flex flex-col">
-      <nav class="flex flex-row w-full items-center p-4 justify-between border-b border-black pb-4">
-        <h1>Tambah Data</h1>
+    <div class="flex flex-col w-full">
+      <nav
+        class="flex flex-row w-full items-center p-4 justify-between border-b border-black pb-4"
+      >
+        <h1>Tambah Kasus</h1>
         <img
           class="rounded-full border border-black shadow-lg mr-3"
           src="https://avatars.githubusercontent.com/u/93970726?v=4"
@@ -29,19 +49,221 @@ import Layout from "../../layouts/Layout.astro";
           height={31.91}
         />
       </nav>
-      <div class="w-[1220px]">
-        <div id="google-map" class="h-[650px] w-full"></div>
+      <div class="flex flex-row gap-10 justify-between p-5 w-full">
+        <div class="flex flex-col p-3 w-1/2">
+          <h1 class="font-bold text-3xl pb-2">Data Karhutla</h1>
+          <form method="post" action="#" class="flex flex-col gap-4 mt-10">
+            <div class="flex flex-row justify-between gap-3">
+              <div class="flex flex-col gap-2 w-full">
+                <h1 class="text-sm">Masukan judul :</h1>
+                <input
+                  name="title"
+                  required
+                  placeholder="Rumah Warga"
+                  type="text"
+                  class="px-4 py-2 w-full rounded-lg outline-none border border-black"
+                />
+              </div>
+              <div class="flex flex-col gap-2 w-full">
+                <h1 class="text-sm">Masukan level :</h1>
+                <!-- <h1 class="text-sm">{body.split("=")}</h1> -->
+                <select
+                  name="level"
+                  class="px-4 py-2 w-full rounded-lg outline-none border border-black"
+                >
+                  <option value="KOSONG">KOSONG</option>
+                  <option value="RENDAH">RENDAH</option>
+                  <option value="MENENGAH">MENENGAH</option>
+                  <option value="TINGGI">TINGGI</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <h1 class="text-sm">Masukan alamat :</h1>
+              <input
+                name="address"
+                required
+                placeholder="Jl. XXXXX ...."
+                type="text"
+                class="px-4 py-2 w-full rounded-lg outline-none border border-black"
+              />
+            </div>
+            <div class="flex flex-row justify-between gap-3">
+              <div class="flex flex-col gap-2 w-full">
+                <h1 class="text-sm">Masukan latitude :</h1>
+                <input
+                  name="lat"
+                  required
+                  placeholder="-00.00000"
+                  type="text"
+                  class="px-4 py-2 w-full rounded-lg outline-none border border-black"
+                />
+              </div>
+              <div class="flex flex-col gap-2 w-full">
+                <h1 class="text-sm">Masukan longitude :</h1>
+                <input
+                  name="long"
+                  required
+                  placeholder="00.000000"
+                  type="text"
+                  class="px-4 py-2 w-full rounded-lg outline-none border border-black"
+                />
+              </div>
+            </div>
+            <div class="flex flex-row items-center gap-3 w-full mt-10">
+              <Button
+                type="reset"
+                className="w-full"
+                color="blue"
+                variant="gradient"
+              >
+                Reset
+              </Button>
+              <Button
+                type="submit"
+                className="w-full"
+                color="green"
+                variant="gradient"
+              >
+                Simpan
+              </Button>
+            </div>
+          </form>
+        </div>
+        <div class="w-1/2">
+          <div id="map" class="h-[650px] w-full"></div>
+        </div>
       </div>
     </div>
   </div>
 </Layout>
 
 <script type="text/javascript">
-  var googleMap;
-  function initGoogleMap() {
-    googleMap = new google.maps.Map(document.getElementById("google-map"), {
+  let docId = (id) => document.getElementById(id);
+  let docQ = (tag) => document.querySelector(`input[name="${tag}"]`);
+  
+  let map, marker;
+
+  function initMap() {
+    map = new google.maps.Map(docId("map"), {
       center: { lat: 0.537488, lng: 101.448387 },
-      zoom: 10,
+      zoom: 15,
+    });
+    map.addListener("click", (event) => {
+      // alert(JSON.stringify(event, null, 2))
+      mark(event.latLng);
+    });
+  }
+
+  function mark(loc) {
+    if (marker) {
+      docQ('lat').value = loc.lat();
+      docQ('long').value = loc.lng();
+      marker.setPosition(loc);
+    } else {
+      marker = new google.maps.Marker({
+        position: loc,
+        map: map,
+      });
+    }
+    revGeo(loc);
+  }
+
+  function revGeo(loc) {
+    const geo = new google.maps.Geocoder();
+    geo.geocode({ location: loc }, (res, stat) => {
+      if (stat === "OK") {
+        docQ('title').value = res[0].address_components[1].short_name;
+        docQ('address').value = res[0].formatted_address;
+      }
     });
   }
 </script>
+
+<!-- {
+  "address_components": [
+      {
+          "long_name": "89d",
+          "short_name": "89d",
+          "types": [
+              "street_number"
+          ]
+      },
+      {
+          "long_name": "Jalan Tanjung Datuk",
+          "short_name": "Jl. Tanjung Datuk",
+          "types": [
+              "route"
+          ]
+      },
+      {
+          "long_name": "Pesisir",
+          "short_name": "Pesisir",
+          "types": [
+              "administrative_area_level_4",
+              "political"
+          ]
+      },
+      {
+          "long_name": "Kecamatan Lima Puluh",
+          "short_name": "Kec. Lima Puluh",
+          "types": [
+              "administrative_area_level_3",
+              "political"
+          ]
+      },
+      {
+          "long_name": "Kota Pekanbaru",
+          "short_name": "Kota Pekanbaru",
+          "types": [
+              "administrative_area_level_2",
+              "political"
+          ]
+      },
+      {
+          "long_name": "Riau",
+          "short_name": "Riau",
+          "types": [
+              "administrative_area_level_1",
+              "political"
+          ]
+      },
+      {
+          "long_name": "Indonesia",
+          "short_name": "ID",
+          "types": [
+              "country",
+              "political"
+          ]
+      },
+      {
+          "long_name": "28155",
+          "short_name": "28155",
+          "types": [
+              "postal_code"
+          ]
+      }
+  ],
+  "formatted_address": "Jl. Tanjung Datuk No.89d, Pesisir, Kec. Lima Puluh, Kota Pekanbaru, Riau 28155, Indonesia",
+  "geometry": {
+      "location": {
+          "lat": 0.5376879999999999,
+          "lng": 101.4516691
+      },
+      "location_type": "ROOFTOP",
+      "viewport": {
+          "south": 0.536339019708498,
+          "west": 101.4503201197085,
+          "north": 0.539036980291502,
+          "east": 101.4530180802915
+      }
+  },
+  "place_id": "ChIJny8g7mus1TERB9vB4ctR50Q",
+  "plus_code": {
+      "compound_code": "GFQ2+3M Pesisir, Pekanbaru City, Riau, Indonesia",
+      "global_code": "6PG3GFQ2+3M"
+  },
+  "types": [
+      "street_address"
+  ]
+} -->

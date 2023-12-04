@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Kasus {
+  id       String  @id @default(cuid())
+  kasus_id String  @default(uuid())
+  title    String?
+  level    Level   @default(KOSONG)
+  address  String?
+  lat      String?
+  long     String?
+}
+
+enum Level {
+  TINGGI
+  MENENGAH
+  RENDAH
+  KOSONG
+}

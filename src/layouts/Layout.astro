@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+import ThemeProvider from '../components/theme-provider';
 interface Props {
   title: string;
 }
@@ -17,10 +19,12 @@ const { title } = Astro.props;
     <link href="https://fonts.cdnfonts.com/css/walkind" rel="stylesheet" />
     <link href="https://fonts.cdnfonts.com/css/mooli" rel="stylesheet" />
     <link href="https://fonts.cdnfonts.com/css/poppins" rel="stylesheet" />
-	<script src={`https://maps.googleapis.com/maps/api/js?key=${import.meta.env.GMAPS_KEY}&callback=initGoogleMap`} async defer></script>
+	  <script src={`https://maps.googleapis.com/maps/api/js?key=${import.meta.env.GMAPS_KEY}&callback=initMap`} async defer></script>
     <title>{title}</title>
   </head>
   <body class="font-[poppins]">
-    <slot />
+    <ThemeProvider>
+      <slot />
+    </ThemeProvider>
   </body>
 </html>
