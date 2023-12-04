@@ -3,13 +3,73 @@ import Container from "../components/Container.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
-<script src={`https://maps.googleapis.com/maps/api/js?key=${import.meta.env.GMAPS_KEY}&callback=initGoogleMap`} async defer></script>
-
 <Layout title="Karhutla">
-	<Container>
-		
-	</Container>
-  <div id="google-map" style="height: 800px; width:"></div>
+  <Container class="flex flex-col p-8">
+    <nav
+      class="flex flex-row items-center justify-between border-b border-black pb-4"
+    >
+      <h1 class="font-[Walkind] text-2xl">Karhutla</h1>
+      <a href="/dashboard" class="px-2 py-1 shadow-md border border-black rounded-xl md:cursor-pointer">Masuk</a>
+    </nav>
+    <section class="flex flex-row w-full justify-between mt-10 gap-8">
+      <div class="flex flex-col w-1/2">
+        <h1 class="text-5xl font-semibold">
+          Kami Menandai suatu <span class="text-orange-600">Karhutla</span> yang terjadi di Indonesia.
+        </h1>
+        <div class="flex flex-col my-12 gap-3">
+          <div class="flex flex-row items-center gap-3">
+            <h1 class="text-2xl font-[mooli] tracking-wide">
+              <span class="font-bold">99+</span>
+               Titik Karhutla
+            </h1>
+          </div>
+          <div class="flex flex-row items-center gap-3">
+            <h1 class="text-2xl font-[mooli] tracking-wide">
+              <span class="font-bold">99+</span>
+               Daerah Level Tinggi
+            </h1>
+          </div>
+          <div class="flex flex-row items-center gap-3">
+            <h1 class="text-2xl font-[mooli] tracking-wide">
+              <span class="font-bold">99+</span>
+               Daerah Level Menengah
+            </h1>
+          </div>
+          <div class="flex flex-row items-center gap-3">
+            <h1 class="text-2xl font-[mooli] tracking-wide">
+              <span class="font-bold">99+</span>
+               Daerah Level Rendah
+            </h1>
+          </div>
+        </div>
+        <div class="flex flex-col gap-3">
+          <h1 class="text-lg text-gray-700">Bantu kami menuntaskan masalah ini dengan menandai titik Karhutla dimanapun daerah nya dengan tepat dan akurat.</h1>
+          <h1 class="text-xl text-gray-900 font-semibold">Demi indonesia yang lebih baik.</h1>
+        </div>
+        <span class="my-5"></span>
+        <div class="flex flex-col gap-3">
+          <h1 class="text-lg text-gray-700">Contact support :</h1>
+          <div class="flex flex-row items-center gap-3">
+            <div class="flex flex-row items-center gap-2 md:cursor-pointer" onclick="location.href = 'https:\/\/github.com/zaadevofc';">
+              <span class="w-2 h-2 rounded-full bg-gray-500"></span>
+              <h1 class="tracking-wider font-semibold font-[mooli]">Github</h1>
+            </div>
+            <div class="flex flex-row items-center gap-2 md:cursor-pointer" onclick="location.href = 'https:\/\/instagram.com/zaadevofc';">
+              <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+              <h1 class="tracking-wider font-semibold font-[mooli]">Instagram</h1>
+            </div>
+            <div class="flex flex-row items-center gap-2 md:cursor-pointer" onclick="location.href = 'https:\/\/t.me/zaadevofc';">
+              <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+              <h1 class="tracking-wider font-semibold font-[mooli]">Telegram</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="w-[600px]">
+        <div id="google-map" class="h-[650px] w-full"></div>
+      </div>
+    </section>
+  </Container>
 </Layout>
 
 <script type="text/javascript">

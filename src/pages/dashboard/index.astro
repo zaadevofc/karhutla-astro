@@ -1,0 +1,47 @@
+---
+import Container from "../../components/Container.astro";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Karhutla">
+  <div class="flex flex-row justify-between divide-x divide-black">
+    <div class="flex flex-col w-1/6 p-4 border-b border-black">
+      <h1 class="font-[Walkind] text-2xl">🔥 Karhutla</h1>
+      <div class="flex flex-col mt-8 gap-3">
+        <a href="/dashboard" class="flex flex-row items-center md:cursor-pointer font-semibold gap-3 bg-orange-600/40 border border-orange-600 shadow-md p-3 rounded-xl w-full">
+          <h1 class="drop-shadow-md">📈</h1>
+          <h1>Dashboard</h1>
+        </a>
+        <a href="/dashboard/add" class="flex flex-row items-center md:cursor-pointer gap-3 p-3 w-full">
+          <h1 class="drop-shadow-md">➕</h1>
+          <h1>Tambah Kasus</h1>
+        </a>
+      </div>
+    </div>
+    <div class="flex flex-col">
+      <nav class="flex flex-row w-full items-center p-4 justify-between border-b border-black pb-4">
+        <h1>Dashboard</h1>
+        <img
+          class="rounded-full border border-black shadow-lg mr-3"
+          src="https://avatars.githubusercontent.com/u/93970726?v=4"
+          alt=""
+          width={31.91}
+          height={31.91}
+        />
+      </nav>
+      <div class="w-[1220px]">
+        <div id="google-map" class="h-[650px] w-full"></div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script type="text/javascript">
+  var googleMap;
+  function initGoogleMap() {
+    googleMap = new google.maps.Map(document.getElementById("google-map"), {
+      center: { lat: 0.537488, lng: 101.448387 },
+      zoom: 10,
+    });
+  }
+</script>
