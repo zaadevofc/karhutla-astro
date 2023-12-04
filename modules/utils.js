@@ -22,5 +22,5 @@ export const verifyJWT = (token) => {
     }
 }
 
-
+export const decode = (obj) => JSON.parse(decodeURIComponent(JSON.stringify(obj).replace(/[+]/g, ' ')));
 export const parser = str => str.split('&').reduce((obj, pair) => { const [key, value] = pair.split('='); return { ...obj, [key]: value }; }, {});
