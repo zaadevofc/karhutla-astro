@@ -1,12 +1,28 @@
 ---
 import prisma from "../../../modules/db";
+import { decode, parser } from "../../../modules/utils";
 import Maps from "../../components/Maps.astro";
 import Navbarr from "../../components/Navbarr.astro";
 import Sidebar from "../../components/Sidebar";
 import Layout from "../../layouts/Layout.astro";
 
+let listKasus = await prisma.kasus.findMany({});
+let query = await Astro.request.text();
+let method = await Astro.request.method;
 let uri = await Astro.url.pathname;
-const listKasus = await prisma.kasus.findMany({});
+let body = decode(parser(query));
+
+if (method == "POST" && body.type == 'del') {
+  const del = await prisma.kasus.deleteMany({ where: { id: body.id } });
+  return Astro.redirect(uri);
+}
+
+let level = [
+  { title: 'Tinggi', color: 'bg-red-600' },
+  { title: 'Menengah', color: 'bg-orange-600' },
+  { title: 'Rendah', color: 'bg-blue-600' },
+  { title: 'Kosong', color: 'bg-gray-600' },
+]
 ---
 
 <Layout title="Karhutla">
@@ -15,7 +31,7 @@ const listKasus = await prisma.kasus.findMany({});
       <Sidebar path={uri} />
     </div>
     <div class="flex flex-col w-full">
-      <Navbarr />
+      <Navbarr title="List Kasus" />
       <div class="flex flex-row gap-10 justify-between p-5 w-full">
         <div class="flex flex-col p-3 w-1/2">
           <div class="flex flex-row justify-between items-center">
@@ -23,42 +39,39 @@ const listKasus = await prisma.kasus.findMany({});
             <h1 id="curr-pos" class="px-2 py-1 shadow-md shadow-orange-500/10 border border-orange-600 rounded-xl md:cursor-pointer">Lokasi sekarang</h1>
           </div>
           <div class="mt-6 flex flex-col">
-            <div class="flex flex-row items-center gap-3">
-              <div class="flex flex-row items-center gap-2">
-                <span class="h-3 w-3 rounded-full bg-red-600"></span>
-                <h1>Tinggi</h1>
-              </div>
-              <div class="flex flex-row items-center gap-2">
-                <span class="h-3 w-3 rounded-full bg-orange-600"></span>
-                <h1>Menengah</h1>
-              </div>
-              <div class="flex flex-row items-center gap-2">
-                <span class="h-3 w-3 rounded-full bg-blue-600"></span>
-                <h1>Rendah</h1>
-              </div>
-              <div class="flex flex-row items-center gap-2">
-                <span class="h-3 w-3 rounded-full bg-gray-600"></span>
-                <h1>Kosong</h1>
-              </div>
+            <div class="flex flex-row items-center gap-3 border-b border-gray-500 pb-3">
+              {level.map(x => (
+                <div class="flex flex-row items-center gap-2">
+                  <span class={`h-3 w-3 rounded-full ${x.color}`}></span>
+                  <h1>{x.title}</h1>
+                </div>
+              ))}
             </div>
-            <div class={`hide-scroll mt-8 flex max-h-[450px] flex-col overflow-y-scroll opacity-100 duration-500`}>
+            <div hidden={listKasus.length != 0} class="mt-10">
+              <h1>☕ Tidak ada data.</h1>
+            </div>
+            <div class={`hide-scroll mt-5 flex max-h-[450px] flex-col overflow-y-scroll opacity-100 duration-500`}>
               {listKasus.reverse().map((x: any) => {
                   return (
-                    <div id={`${x.lat}&&${x.long}`} class="flex items-center gap-5 divide-black border-b border-gray-400 p-2 pl-0 hover:rounded-lg hover:bg-slate-400/30 md:cursor-pointer">
+                    <div id={`${x.lat}&&${x.long}`} class="flex items-center gap-5 pb-3 divide-black border-b border-gray-400 p-2 pl-0 hover:rounded-lg hover:bg-slate-400/30 md:cursor-pointer">
                       <div class="flex w-full flex-col">
                         <h1 class="line-clamp-1 font-semibold">{x.address}</h1>
                         <div class="flex w-full flex-row items-center justify-between">
-                          <h1>
-                            <span class="font-medium text-purple-600">{x.title}</span> |{' '}
-                            <span class="text-stone-700 text-sm">
-                              {x.lat}, {x.long}
-                            </span>
-                          </h1>
-                          <div class="flex flex-row items-center gap-2">
+                          <div class="flex flex-row items-center gap-1">
                             {x.level == 'TINGGI' && <span class="h-3 w-3 rounded-full bg-red-600"></span>}
                             {x.level == 'MENENGAH' && <span class="h-3 w-3 rounded-full bg-orange-600"></span>}
                             {x.level == 'RENDAH' && <span class="h-3 w-3 rounded-full bg-blue-600"></span>}
                             {x.level == 'KOSONG' && <span class="h-3 w-3 rounded-full bg-gray-600"></span>}
+                            <h1>
+                              <span class="font-medium text-gray-900">{x.title}</span> |{' '}
+                              <span class="text-stone-700 text-sm">
+                                {x.lat}, {x.long}
+                              </span>
+                            </h1>
+                            </div>
+                          <div class="flex flex-row items-center gap-2">
+                            <h1 id={`edit-${x.lat}&&${x.long}`} class="text-sm" onclick={`location.href = '/dashboard/add/?kasusId=${x.kasus_id}'`}>✏️</h1>
+                            <h1 id={`del-${x.lat}&&${x.long}`} class="text-sm">❌</h1>
                           </div>
                         </div>
                       </div>

@@ -9,20 +9,22 @@ interface Props {
 
 let props = Astro.props;
 const listKasus = await prisma.kasus.findMany({});
+const delKasus = async (id) => await prisma.kasus.delete({ where: { id } })
 ---
 
 <div id="map" class={`${props.height} ${props.width} h-[1000px] w-full`}></div>
 
-<script define:vars={{ listKasus, maping: props.maping }}>
+<script define:vars={{ listKasus, maping: props.maping, delKasus }}>
   globalThis.listMark = listKasus;
   globalThis.maping = maping;
+  globalThis.delKasus = delKasus;
 </script>
 
 <script type="text/javascript" async>
   let docId = (id) => document.getElementById(id);
   let docQ = (tag) => document.querySelector(`input[name="${tag}"]`);
   let map, marker;
-
+  
   let pos = {
     lat: parseFloat(listMark[listMark.length - 1]?.lat) || -7.6275395,
     lng: parseFloat(listMark[listMark.length - 1]?.long) || 110.8934787,
@@ -97,6 +99,22 @@ const listKasus = await prisma.kasus.findMany({});
       let latlng = new google.maps.LatLng(x.lat, x.long, 14);
       map.setCenter(latlng);
       revGeo(latlng);
+    });
+
+    docId(`del-${x.lat}&&${x.long}`).addEventListener("click", (e) => {
+      var form = document.createElement("form");
+      form.action = "/dashboard/list";
+      form.method = "post";
+      t = document.createElement("input");
+      t.name = "type";
+      t.value = "del";
+      q = document.createElement("input");
+      q.name = "id";
+      q.value = x.id;
+      form.appendChild(t);
+      form.appendChild(q);
+      document.body.appendChild(form);
+      form.submit();
     });
   }
 </script>

@@ -9,7 +9,7 @@ datasource db {
 
 model Kasus {
   id       String  @id @default(cuid())
-  kasus_id String  @default(uuid())
+  kasus_id String  @default(uuid()) @unique
   title    String?
   level    Level   @default(KOSONG)
   address  String?

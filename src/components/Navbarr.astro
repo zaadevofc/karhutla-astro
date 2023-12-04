@@ -1,11 +1,11 @@
 ---
 interface Props {
-
+  title?: string;
 }
 
 let props = Astro.props;
 ---
 <nav class="flex flex-row w-full items-center p-4 justify-between border-b border-black pb-4">
-  <h1>Tambah Kasus</h1>
-  <img class="rounded-full border border-black shadow-lg mr-3" src="https://avatars.githubusercontent.com/u/93970726?v=4" alt="zaadevofc" width={31.91} height={31.91} />
+  <h1>{props.title ?? 'Dashboard'}</h1>
+  <slot />
 </nav>
