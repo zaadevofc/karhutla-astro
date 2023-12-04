@@ -12,7 +12,6 @@
   "dependencies": {
     "@astrojs/react": "^3.0.6",
     "@astrojs/tailwind": "^5.0.2",
-    "@astrojs/vercel": "^5.2.0",
     "@heroicons/react": "^2.0.18",
     "@material-tailwind/react": "^2.1.5",
     "@prisma/client": "^5.6.0",

@@ -1,9 +1,9 @@
-import { Card, Typography, List, ListItem, ListItemPrefix } from "@material-tailwind/react";
+import { Card, List, ListItem, ListItemPrefix } from "@material-tailwind/react";
 
 let list = [
   { title: ["📈", "Dashboard"], href: "/dashboard" },
-  { title: ["➕", "Tambah Data"], href: "/dashboard/add" },
   { title: ["📌", "List Kasus"], href: "/dashboard/list" },
+  { title: ["➕", "Tambah Data"], href: "/dashboard/add" },
   { title: ["🎯", "Keluar"], href: "/" },
 ];
 

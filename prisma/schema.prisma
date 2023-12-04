@@ -7,9 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id       String @id @default(cuid())
+  user_id  String @unique @default(uuid())
+  name     String
+  email    String
+  password String
+  session  String @unique
+}
+
 model Kasus {
   id       String  @id @default(cuid())
-  kasus_id String  @default(uuid()) @unique
+  kasus_id String  @unique @default(uuid())
   title    String?
   level    Level   @default(KOSONG)
   address  String?
