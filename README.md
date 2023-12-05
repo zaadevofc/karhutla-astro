@@ -24,6 +24,9 @@ npm run dev
 
 * CRUD `(create, read, update, delete)`
 * Set Mark berdasarkan data di database.
+* Sistem Auth, Session.
+* Login/Register.
+* Protected Page, dll.
 * Lainnya? request sini.
 
 ## Nih tampilan
