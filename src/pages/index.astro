@@ -16,7 +16,8 @@ let contacts = [
   { title: 'Telegram', href: 'https://t.me/zaadevofc', color: 'bg-cyan-500' }, 
 ]
 
-let user = Astro.locals;
+let back: any = Astro.locals;
+
 ---
 
 <Layout title="Karhutla">
@@ -25,7 +26,7 @@ let user = Astro.locals;
       <h1 class="font-[Walkind] text-2xl tracking-wide">Karhutla</h1>
       <div class="flex flex-row gap-3 items-center">
         <h1 id="curr-pos" class="px-2 py-1 shadow-md shadow-cyan-500/10 border border-cyan-600 rounded-xl md:cursor-pointer">Lokasi saat ini</h1>
-        <a href={!user ? '/dashboard' : '/auth/login'} class="px-2 py-1 shadow-md shadow-orange-500/10 border border-orange-600 rounded-xl md:cursor-pointer">{!user ? 'Dashboard' : 'Masuk'}</a>
+        <a href={back.session ? '/dashboard' : '/auth/login'} class="px-2 py-1 shadow-md shadow-orange-500/10 border border-orange-600 rounded-xl md:cursor-pointer">{back.session ? 'Dashboard' : 'Masuk'}</a>
       </div>
     </nav>
     <section class="flex flex-row w-full justify-between mt-10 gap-8">

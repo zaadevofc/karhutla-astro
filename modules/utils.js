@@ -1,10 +1,10 @@
 import { sign, verify } from 'jsonwebtoken'
-let secret = process.env.NEXTAUTH_JWT_SECRET
+let secret = "hahahahhahhahayuayduayd878"
 
-export const signJWT = (obj) => {
+export const signJWT = (obj, exp = 8) => {
     try {
         return sign(obj, secret, {
-            expiresIn: 8,
+            expiresIn: exp,
         })
     } catch (e) {
         return false

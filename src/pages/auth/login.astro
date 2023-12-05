@@ -1,22 +1,40 @@
 ---
+import prisma from "../../../modules/db";
+import { decode, parser, signJWT, verifyJWT } from "../../../modules/utils";
 import Input from "../../components/Input.astro";
 import Layout from "../../layouts/Layout.astro";
 
+let secret = Astro.cookies.get('secret')?.value || null;
+let query = await Astro.request.text();
+let method = Astro.request.method;
+let uri = Astro.url.pathname;
+let body = decode(parser(query));
+
+if (method == "POST") {  
+  const check = await prisma.user.findUnique({ where: { email: verifyJWT(secret).e || '' } }); 
+  if (check) {
+      Astro.cookies.set('session', signJWT({ token: body.email }, 2419200), {
+      maxAge:2419200,
+      path: '/'
+    })
+  } else return Astro.redirect(uri)
+  return Astro.redirect('/dashboard');
+}
 ---
 
 <Layout title="Login | Karhutla">
-    <div class="flex flex-col items-center gap-10 h-screen justify-center">
-      <h1 class="font-[Walkind] text-4xl tracking-wide">Karhutla</h1>
+    <form method="post" action="#" class="flex flex-col items-center gap-10 h-screen justify-center">
+      <h1 class="font-[Walkind] text-4xl tracking-wide">🔥Karhutla</h1>
       <div class="flex flex-col gap-3">
-        <Input placeholder="Masukan username/email" class="border-orange-600 px-5 w-[290px]" />
-        <Input placeholder="Masukan password" class="border-orange-600 px-5 w-[290px]" />
+        <Input value={secret && verifyJWT(secret).e} name="email" type="email" placeholder="Masukan email" class="border-orange-600 px-5 w-[290px]" />
+        <Input value={secret && verifyJWT(secret).p} name="password" type="password" placeholder="Masukan password" class="border-orange-600 px-5 w-[290px]" />
         <div class="flex flex-col items-center mt-5">
-          <h1 id="curr-pos" class="px-2 py-1 shadow-md w-fit mx-auto shadow-orange-500/10 border border-orange-600 rounded-lg md:cursor-pointer">Masuk</h1>
+          <button type="submit" class="px-2 py-1 shadow-md w-fit mx-auto shadow-orange-500/10 border border-orange-600 rounded-lg md:cursor-pointer">Masuk</button>
         </div>
         <h1 class="mt-5 text-sm mx-auto">
           Belum punya akun?{' '}
           <a href="/auth/register" class="underline">Daftar sekarang.</a>
         </h1>
       </div>
-    </div>
+    </form>
 </Layout>
